@@ -28,6 +28,9 @@ const getters = {
   },
   attrsList(state) {
     return state.searList.attrsList || []
+  },
+  totalList(state) {
+    return state.searList.total || ''
   }
 }
 

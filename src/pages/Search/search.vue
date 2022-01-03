@@ -21,34 +21,29 @@
                <!-- 品牌的面包屑 -->
             <li class="with-x" v-if="searchParams.trademark">{{searchParams.trademark.split(':')[1]}}
               <i @click="removeMark">×</i></li>
+              <!--属性面包屑-->
+              <li class="with-x" v-for="(item,index) in searchParams.props" :key="index">{{item.split(":")[1]}}
+              <i @click="removeAttr(index)">×</i></li>
           </ul>
         </div>
 
         <!--selector 显示手机品牌等相关信息-->
-        <SearchSelector  @trademarkInfo = "trademarkInfo"/>
+        <SearchSelector  @trademarkInfo = "trademarkInfo" @attrInfo = "attrInfo"/>
 
         <!--details 详情-->
         <div class="details clearfix">
           <div class="sui-navbar">
             <div class="navbar-inner filter">
               <ul class="sui-nav">
-                <li class="active">
-                  <a href="#">综合</a>
+                <li :class='{active:isOne}' @click="changeOrder('1')">
+                  <a >综合
+                    <span v-show="isOne" class="iconfont" :class="{'icon-run-up':isAsc,'icon-download':isDesc}"></span>
+                  </a>
                 </li>
-                <li>
-                  <a href="#">销量</a>
-                </li>
-                <li>
-                  <a href="#">新品</a>
-                </li>
-                <li>
-                  <a href="#">评价</a>
-                </li>
-                <li>
-                  <a href="#">价格⬆</a>
-                </li>
-                <li>
-                  <a href="#">价格⬇</a>
+                <li :class='{active:isTwo}' @click="changeOrder('2')">
+                  <a >销量
+                    <span v-show="isTwo" class="iconfont" :class="{'icon-run-up':isAsc,'icon-download':isDesc}"></span>
+                  </a>
                 </li>
               </ul>
             </div>
@@ -63,9 +58,9 @@
               >
                 <div class="list-wrap">
                   <div class="p-img">
-                    <a href="item.html" target="_blank">
+                    <router-link :to="`/detail/${good.id}`">
                       <img :src="good.defaultImg"
-                    /></a>
+                    /></router-link>
                   </div>
                   <div class="price">
                     <strong>
@@ -100,35 +95,9 @@
             </ul>
           </div>
           <!--分页-->
-          <div class="fr page">
-            <div class="sui-pagination clearfix">
-              <ul>
-                <li class="prev disabled">
-                  <a href="#">«上一页</a>
-                </li>
-                <li class="active">
-                  <a href="#">1</a>
-                </li>
-                <li>
-                  <a href="#">2</a>
-                </li>
-                <li>
-                  <a href="#">3</a>
-                </li>
-                <li>
-                  <a href="#">4</a>
-                </li>
-                <li>
-                  <a href="#">5</a>
-                </li>
-                <li class="dotted"><span>...</span></li>
-                <li class="next">
-                  <a href="#">下一页»</a>
-                </li>
-              </ul>
-              <div><span>共10页&nbsp;</span></div>
-            </div>
-          </div>
+          <Pagination :pageNO ='searchParams.pageNo' :pageSize="searchParams.pageSize" 
+           :total="totalList" :severalnum="5" @getPage = "getPageNo"
+          />
         </div>
       </div>
     </div>
@@ -155,7 +124,7 @@ export default {
         //搜索的关键字
         keyword: "",
         //排序:初始状态应该是综合且降序
-        order: "",
+        order: "1:desc",
         //第几页
         pageNo: 1,
         //每一页展示条数
@@ -212,6 +181,49 @@ export default {
       this.searchParams.trademark = undefined
       // 再次发送请求
       this.pullData()
+    },
+    // 收集属性信息
+    attrInfo(attr,attrVal) {
+      // ["属性ID:属性值:属性名"]
+      let prop = `${attr.attrId}:${attrVal}:${attr.attrName}`
+      if(this.searchParams.props.indexOf(prop) == -1) {
+        this.searchParams.props.push(prop)
+      }
+      // 发送请求
+      this.pullData()
+    },
+    // 移除属性面包屑
+    removeAttr(index) {
+      this.searchParams.props.splice(index,1)
+      // 发送请求
+      this.pullData()
+    },
+    changeOrder(flag) {
+      //flag:用户每一次点击li标签的时候，用于区分是综合（1）还是价格（2）
+      //现获取order初始状态【咱们需要通过初始状态去判断接下来做什么】
+      let Orginorder = this.searchParams.order
+      let OrderFlag = Orginorder.split(':')[0]
+      let OrderSort = Orginorder.split(':')[1]
+      // 新的排序
+      let newOrder = '';
+      if(OrderFlag == flag) {
+        // 点击为综合
+        newOrder = `${OrderFlag}:${OrderSort == 'desc' ? 'asc' : 'desc'}`
+      } else {
+        // 点击的不是同一个按钮
+        newOrder = `${flag}:${'desc'}`
+      }
+      // 将新数据替换旧数据
+      this.searchParams.order = newOrder
+      // 再次发送请求
+      this.pullData()
+    },
+    //点击的是第几页
+    getPageNo(pageNo) {
+      // console.log(pageNo)
+      this.searchParams.pageNo = pageNo;
+      // 发送请求
+      this.pullData()
     }
   },
   watch: {
@@ -233,6 +245,19 @@ export default {
   computed: {
     //mapGetters里面的写法：传递的数组，因为getters计算是没有划分模块【home,search】
     ...mapGetters(["goodsList"]),
+    ...mapGetters(['totalList']),
+    isOne() {
+      return this.searchParams.order.indexOf('1') != -1
+    },
+    isTwo() {
+      return this.searchParams.order.indexOf('2') != -1
+    },
+    isAsc() {
+      return this.searchParams.order.indexOf('asc') != -1
+    },
+    isDesc() {
+      return this.searchParams.order.indexOf('desc') != -1
+    }
   },
   // 在挂载之前调用一次，将传过来的参数修改
   beforeMount() {

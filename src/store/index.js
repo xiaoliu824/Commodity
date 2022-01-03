@@ -4,11 +4,13 @@ Vue.use(Vuex)
 
 import home from './home/home'
 import search from "./search/search";
+import detail from './detail/detail'
 
 const store = new Vuex.Store({
   modules: {
     home,
-    search
+    search,
+    detail
   }
 })
 
