@@ -1,12 +1,13 @@
 <template>
-  <div class="swiper-container" ref="cur">
+  <div class="swiper-container" ref="swicur">
     <div class="swiper-wrapper">
       <div
         class="swiper-slide"
         v-for="(slide, index) in skuImageList"
         :key="slide.id"
+        @click="changeCurrentIndex(index)"
       >
-        <img :src="slide.imgUrl" :class="{active:currentIndex==index}" @click="changeCurrentIndex(index)"/>
+        <img :src="slide.imgUrl" :class="{ active: currentIndex == index }" />
       </div>
     </div>
     <div class="swiper-button-next"></div>
@@ -20,36 +21,40 @@ export default {
   name: "ImageList",
   data() {
     return {
-      currentIndex:0
-    }
+      currentIndex: 0,
+    };
   },
   props: ["skuImageList"],
   watch: {
     //监听数据:可以保证数据一定ok，但是不能保证v-for遍历结构是否完事。
-    skuImageList(newValue, oldValue) {
-      this.$nextTick(() => {
-        new Swiper(this.$refs.cur, {
-          // 如果需要前进后退按钮
-          navigation: {
-            nextEl: ".swiper-button-next",
-            prevEl: ".swiper-button-prev",
-          },
-          //显示几个图片设置
-          slidesPerView: 3,
-          //每一次切换图片个数
-          slidesPerGroup:1
+    skuImageList: {
+      handler() {
+        // 保证结构完毕
+        this.$nextTick(() => {
+          new Swiper(this.$refs.swicur, {
+            // 前进后退按钮
+            navigation: {
+              nextEl: ".swiper-button-next",
+              prevEl: ".swiper-button-prev",
+            },
+            // 显示几个图片设置
+            slidesPerView: 3,
+            //每一次切换图片个数
+            slidesPerGroup: 1,
+          });
         });
-      });
+      },
     },
   },
   methods: {
-    changeCurrentIndex(index){
-      //修改响应式数据
-      this.currentIndex = index;
-      //通知兄弟组件：当前的索引值为几
-      this.$bus.$emit('getIndex',this.currentIndex);
-    },
-  },
+    // 改变当前索引值
+    changeCurrentIndex(index) {
+      // 将索引值改变为当前点击项
+      this.currentIndex = index
+      // 告知兄弟组件当前点击的第几个
+      this.$bus.$emit('getIndex',this.currentIndex)
+    }
+  }
 };
 </script>
 

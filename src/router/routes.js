@@ -40,6 +40,24 @@ export default [
   },
   {
     path: '/',
-    redirect: '/home'
+    redirect: '/home' // 重定向
+  },
+  {
+    path: '/addCart',
+    name: 'addCart',
+    component: ()=> import('@/pages/AddCartSuccess/index'),
+    meta: {
+      //通过路由原信息来控制footer组件显示与隐藏
+      show: true
+    }
+  },
+  {
+    path: '/showCart',
+    name: 'showcart',
+    component: ()=> import('@/pages/ShopCart/index'),
+    meta: {
+      //通过路由原信息来控制footer组件显示与隐藏
+      show: true
+    }
   }
 ]

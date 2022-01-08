@@ -22,9 +22,9 @@
         <!-- 左侧放大镜区域 -->
         <div class="previewWrap">
           <!--放大镜效果-->
-          <Zoom  />
+          <Zoom :skuImageList ="skuImageList" />
           <!-- 小图列表 -->
-          <ImageList  />
+          <ImageList :skuImageList ="skuImageList" />
         </div>
         <!-- 右侧选择区域布局 -->
         <div class="InfoWrap">
@@ -73,21 +73,40 @@
               </div>
             </div>
           </div>
-
           <div class="choose">
-      
+            <div class="chooseArea">
+              <div class="choosed"></div>
+              <dl
+                v-for="(spuSaleAttr, index) in spuSaleAttrList"
+                :key="spuSaleAttr.id"
+              >
+                <dt class="title">{{ spuSaleAttr.saleAttrName }}</dt>
+                <dd
+                  :class="{ active: spuSaleAttrValue.isChecked == 1 }"
+                  v-for="(spuSaleAttrValue,
+                  index) in spuSaleAttr.spuSaleAttrValueList"
+                  :key="spuSaleAttrValue.id"
+                  @click="changeAttr(spuSaleAttrValue,spuSaleAttr.spuSaleAttrValueList)"
+                >
+                  {{ spuSaleAttrValue.saleAttrValueName }}
+                </dd>
+              </dl>
+            </div>
             <div class="cartWrap">
               <div class="controls">
                 <input
                   autocomplete="off"
                   class="itxt"
-                
+                  v-model="spNum"
+                  @change="changeNum"
                 />
-                <a href="javascript:" class="plus" >+</a>
+                <a href="javascript:" class="plus" 
+                 @click="spNum++"
+                >+</a>
                 <a
                   href="javascript:"
                   class="mins"
-                 
+                  @click="spNum > 1  ? spNum-- : spNum = 1"
                   >-</a
                 >
               </div>
@@ -95,7 +114,7 @@
                 <!-- 以前咱们的路由跳转：从A路由跳转到B路由，这里在加入购物车，进行路由跳转之前，发请求
                     把你购买的产品的信息通过请求的形式通知服务器，服务器进行相应的存储
                   -->
-                <a >加入购物车</a>
+                <a @click="addCar">加入购物车</a>
               </div>
             </div>
           </div>
@@ -356,13 +375,69 @@ export default {
     ImageList,
     Zoom,
   },
+  data() {
+    return {
+      // 购买商品的数量
+      spNum: 1,
+    }
+  },
   mounted() {
     //派发action获取产品详情的信息
     this.$store.dispatch("getGoodInfo", this.$route.params.skuId);
   },
   computed: {
-    ...mapGetters(["categoryView", "skuInfo", "spuSaleAttrList"]),
+    ...mapGetters(["categoryView", "skuInfo",'spuSaleAttrList']),
+    // 传递给子组件的数据
+    skuImageList() {
+      // 如果服务器数据还没有回来,返回一个空数组
+      return this.skuInfo.skuImageList || []
+    }
   },
+  methods: {
+    // 改变高亮状态
+    changeAttr(clickV,arr) {
+      // 遍历数组，将其状态全部先清除，不显示高亮
+      arr.forEach(item => {
+        item.isChecked = 0
+      })
+      // 将点击那一项的状态变为1
+      clickV.isChecked = 1
+    },
+    // 表单元素修改元素的个数
+    changeNum(event) {
+      // 用户输入的内容
+      let result = event.target.value * 1 ;
+      // 如果用户输入的数字非法
+      if(isNaN(result) || result < 1) {
+        this.spNum = 1
+      } else {
+        //正常大于1【大于1整数不能出现小数】
+        this.spNum = parseInt(result)
+      }
+    },
+    // 加入购物车
+    async addCar() {
+      //1:在点击加入购物车这个按钮的时候，做的第一件事情，将参数带给服务器（发请求），通知服务器加入购车的产品是谁
+      //this.$store.dispatch('addOrUpdateShopCart'),说白了，它是在调用vuex仓库中的这个addOrUpdateShopCart函数。
+      //2:你需要知道这次请求成功还是失败，如果成功进行路由跳转，如果失败，需要给用户提示
+      try{
+        // 成功
+       await this.$store.dispatch('addShopCar',{skuId: this.$route.params.skuId,skuNum: this.spNum})
+        //3:进行路由跳转
+        //4:在路由跳转的时候还需要将产品的信息带给下一级的路由组件
+        //一些简单的数据skuNum，通过query形式给路由组件传递过去
+        //产品信息的数据【比较复杂:skuInfo】,通过会话存储（不持久化,会话结束数据在消失）
+        //本地存储|会话存储，一般存储的是字符串.
+        sessionStorage.setItem('SKUInfo',JSON.stringify(this.skuInfo))
+        //* 路由跳转
+        this.$router.push({name: 'addCart',query:{skuNum: this.spNum}})
+
+      } catch(e) {
+        // 失败
+        alert(e.message)
+      }
+    }
+  }
 };
 </script>
 

@@ -1,4 +1,4 @@
-import { reqGoodsInfo } from "@/api";
+import { reqGoodsInfo,reqAddUpCart } from "@/api";
 
 const state = {
   goodInfo: {},
@@ -17,6 +17,17 @@ const actions = {
       commit("GETGOODINFO", result.data);
     }
   },
+  // 将商品添加到购物车
+  async addShopCar({commit},{skuId,skuNum}) {
+    let result = await reqAddUpCart(skuId,skuNum)
+    if(result.code == 200) {
+      // 添加成功
+      return 'ok'
+    } else {
+      // 失败
+      return Promise.reject(new Error('出错了'))
+    }
+  }
 };
 //简化数据而生
 const getters = {
@@ -30,10 +41,10 @@ const getters = {
   skuInfo(state) {
     return state.goodInfo.skuInfo || {};
   },
-  //产品售卖属性的简化
+  // 售卖属性的简化
   spuSaleAttrList(state) {
-    return state.goodInfo.spuSaleAttrList || [];
-  },
+    return state.goodInfo.spuSaleAttrList || []
+  }
 };
 export default {
   state,

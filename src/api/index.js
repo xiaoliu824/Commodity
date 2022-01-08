@@ -47,3 +47,9 @@ export function getSearchInfo(params) {
 export function reqGoodsInfo(skuId) {
   return requests({url: `/item/${skuId}`,method: 'get'})
 }
+
+// 添加到购物车的接口 /api/cart/addToCart/{ skuId }/{ skuNum } post
+export function reqAddUpCart(skuId,skuNum) {
+  return requests({url: `/cart/addToCart/${skuId}/${skuNum}`,method:'post'});
+}
+
