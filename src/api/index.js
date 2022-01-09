@@ -53,3 +53,20 @@ export function reqAddUpCart(skuId,skuNum) {
   return requests({url: `/cart/addToCart/${skuId}/${skuNum}`,method:'post'});
 }
 
+// 获取购物车信息
+export function reqGetShopList() {
+  return requests({url: '/cart/cartList',method: 'get'})
+}
+
+// 切换购物车单个选中状态
+// /api/cart/checkCart/{skuID}/{isChecked} get
+export function CheckStatus(skuId,isChecked) {
+  return requests({url: `/cart/checkCart/${skuId}/${isChecked}`,method: 'get'})
+}
+
+// 删除单个商品
+// /api/cart/deleteCart/{skuId} DELETE
+export function Deletegoods(skuId) {
+  return requests({url: `/cart/deleteCart/${skuId}`, method: 'delete'})
+}
+
