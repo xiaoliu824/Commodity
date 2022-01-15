@@ -70,3 +70,33 @@ export function Deletegoods(skuId) {
   return requests({url: `/cart/deleteCart/${skuId}`, method: 'delete'})
 }
 
+// 注册
+// /api/user/passport/register post
+export function Register(data) {
+  return requests({url: '/user/passport/register',data,method: 'post'});
+}
+
+//获取验证码
+//URL:/api/user/passport/sendCode/{phone}  method:get
+export function getCode(phone) {
+  return requests({url: `/user/passport/sendCode/${phone}` ,method:'get'})
+}
+
+// 登录
+// /api/user/passport/login post
+export function UserLogin(data) {
+  return requests({url: '/user/passport/login',data,method:'post'});
+}
+
+//获取用户信息【需要带着用户的token向服务器要用户信息】
+//URL:/api/user/passport/auth/getUserInfo  method:get 
+export function GetUserInfo() {
+  return requests({url: '/user/passport/auth/getUserInfo',method: 'get'})
+}
+
+// 退出登录
+// /api/user/passport/logout get
+export function UserLogiut() {
+  return requests({url:'/user/passport/logout',method: 'get'})
+}
+
