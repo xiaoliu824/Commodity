@@ -59,5 +59,21 @@ export default [
       //通过路由原信息来控制footer组件显示与隐藏
       show: true
     }
+  }, 
+  {
+    path: '/trade',
+    name: 'trade',
+    component: () => import('@/pages/Trade/index'),
+    meta: {
+      show: true
+    }
+  },
+  {
+    path: '/pay',
+    name: 'pay',
+    component: () => import('@/pages/Pay/index'),
+    meta: {
+      show: true
+    }
   }
 ]

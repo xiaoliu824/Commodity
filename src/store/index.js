@@ -7,6 +7,7 @@ import search from "./search/search";
 import detail from './detail/detail'
 import shopcar from './shopcar/shopcar'
 import user from './User/user'
+import trade from './trade/trade'
 
 const store = new Vuex.Store({
   modules: {
@@ -14,7 +15,8 @@ const store = new Vuex.Store({
     search,
     detail,
     shopcar,
-    user
+    user,
+    trade
   }
 })
 

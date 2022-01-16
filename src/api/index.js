@@ -100,3 +100,27 @@ export function UserLogiut() {
   return requests({url:'/user/passport/logout',method: 'get'})
 }
 
+// 获取订单页信息
+// /api/order/auth/trade get
+export function GetOrderInfo() {
+  return requests({url: '/order/auth/trade',method: 'get'})
+}
+
+// 获取用户地址信息
+//URL:/api/user/userAddress/auth/findUserAddressList  method:get
+export function GetAddress() {
+  return requests({url: '/user/userAddress/auth/findUserAddressList', method: 'get'});
+}
+
+// 提交订单接口
+// /api/order/auth/submitOrder?tradeNo={tradeNo}
+export function SubOrder(tradeNo,data) {
+  return requests({url:`/order/auth/submitOrder?tradeNo=${tradeNo}`,method: 'post', data})
+}
+
+//获取支付信息
+//URL:/api/payment/weixin/createNative/{orderId}  GET
+export function PayInfo(orderId) {
+  return requests({url: `/payment/weixin/createNative/${orderId}`,method: 'get'})
+}
+

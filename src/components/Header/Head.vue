@@ -85,9 +85,11 @@ export default {
       try {
         // 如果退出成功
         await this.$store.dispatch("OverLogin");
-        console.log(this.$route)
-        // // 回到首页
-        // this.$router.push("/home");
+        if(!(this.$router.path == '/' || this.$router.path == '/home')) {
+          // 回到首页
+          this.$router.push('/home');
+        }
+        
       } catch (error) {
         alert(error.message)
       }

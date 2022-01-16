@@ -32,10 +32,9 @@ export default {
       FList: (state) => state.home.FloorList,
     }),
   },
-  mounted() {
+   mounted() {
     // 派发请求，得到数据
     this.$store.dispatch("getfloorList");
-    this.$store.dispatch("GetUserInfos");
   },
 };
 </script>
