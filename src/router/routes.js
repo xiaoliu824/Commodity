@@ -1,6 +1,28 @@
 
 export default [
   {
+    path: '/center',
+    component: () => import('@/pages/Center/index'),
+    children: [
+      {
+        // path: '/center/myorder',
+        path: 'myorder',
+        component:()=> import('@/pages/Center/myOrder/index'),
+      },
+      {
+        path: 'groupbuy',
+        // component: ()=>  import('@/pages/Center/groupOrder/index'),
+        component: () => import('@/pages/Center/groupOrder/index')
+        // component:()=> import('@/pages/Center/myOrder/index'),
+      },
+
+      {
+        path: '',
+        redirect: 'myorder'
+      }
+    ]
+  },
+  {
     path: '/home',
     component:  ()=> import('@/pages/Home/home'),
     meta: {
@@ -49,7 +71,7 @@ export default [
     meta: {
       //通过路由原信息来控制footer组件显示与隐藏
       show: true
-    }
+    },
   },
   {
     path: '/showCart',
@@ -66,7 +88,17 @@ export default [
     component: () => import('@/pages/Trade/index'),
     meta: {
       show: true
+    },
+    /* 只能从购物车界面, 才能跳转到交易界面 */
+    beforeEnter: (to, from, next) => {
+      // ...
+      if(from.path === '/showCart') {
+        next()
+      } else {
+        next('/showCart')
+      }
     }
+     
   },
   {
     path: '/pay',
@@ -74,6 +106,23 @@ export default [
     component: () => import('@/pages/Pay/index'),
     meta: {
       show: true
+    },
+    /* 只能从交易界面, 才能跳转到支付界面 */
+    beforeEnter: (to, from, next) => {
+      // ...
+      if(from.path === '/trade') {
+        next()
+      } else {
+        next(false)
+      }
     }
+  },
+  {
+    path: '/paySuccess',
+    name: 'paySuccess',
+    component: () => import('@/pages/PaySuccess/index'),
+    meta: {
+      show: true
+    },
   }
 ]

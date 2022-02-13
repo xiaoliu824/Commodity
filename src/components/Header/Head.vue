@@ -18,8 +18,8 @@
           </p>
         </div>
         <div class="typeList">
-          <a href="###">我的订单</a>
-          <a href="###">我的购物车</a>
+          <router-link to="/center/myorder">我的订单</router-link>
+          <router-link to="/showCart">我的购物车</router-link>
           <a href="###">我的尚品汇</a>
           <a href="###">尚品汇会员</a>
           <a href="###">企业采购</a>
@@ -85,10 +85,10 @@ export default {
       try {
         // 如果退出成功
         await this.$store.dispatch("OverLogin");
-        if(!(this.$router.path == '/' || this.$router.path == '/home')) {
+        // if(!(this.$router.path == '/' || this.$router.path == '/home')) {
           // 回到首页
           this.$router.push('/home');
-        }
+        // }
         
       } catch (error) {
         alert(error.message)

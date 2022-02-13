@@ -31,6 +31,17 @@ Vue.component(typeNav.name,typeNav)
 Vue.component(Carousel.name,Carousel)
 Vue.component(Pagination.name,Pagination)
 
+// 引入图片懒加载
+import atm from '@/assets/1.gif'
+import VueLazyload from 'vue-lazyload'
+Vue.use(VueLazyload,{
+  //懒加载默认的图片
+  loading: atm
+})
+
+//引入表单校验插件
+import "@/plugins/validate";
+
 new Vue({
   render: h => h(App),
   //配置中央事件总线

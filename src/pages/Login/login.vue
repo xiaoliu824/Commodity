@@ -89,10 +89,10 @@ export default {
     async userLogin() {
       try {
         const { phone, password } = this;
-        phone &&
-          password &&
           await this.$store.dispatch("UserLogin", { phone, password });
-          this.$router.push("/home");
+          // 如果地址栏中有地址跳转到保存地址,否则跳到主页
+          let toPath = this.$route.query.newPath || '/home'
+          this.$router.push(toPath);
       } catch (error) {
         alert(error.message);
       }

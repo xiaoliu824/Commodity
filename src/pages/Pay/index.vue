@@ -93,11 +93,14 @@
 </template>
 
 <script>
+import QRCode from 'qrcode'
 export default {
   name: "Pay",
   data() {
     return {
       payInfo: {}, //支付信息
+      timer: null,
+      successCode: ''
     };
   },
   computed: {
@@ -114,8 +117,11 @@ export default {
       }
     },
     //弹出框
-    open() {
-      this.$alert("<strong>这是 <i>HTML</i> 片段</strong>", "HTML 片段", {
+    async open() {
+      // 生成二维码
+      let { codeUrl,orderId } = this.payInfo
+      let url =await QRCode.toDataURL(codeUrl)
+      this.$alert(`<img src=${url} />`, "请您微信支付", {
         dangerouslyUseHTMLString: true,
         // 是否居中布局
         center: true,
@@ -127,7 +133,48 @@ export default {
         confirmButtonText: '已支付成功',
         //右上角的叉子没了
         showClose: false,
-      });
+        beforeClose:(type,instance,done)=> {
+          //type:区分取消|确定按钮
+          //instance：当前组件实例
+          //done:关闭弹出框的方法
+          if (type == "cancel") {
+            //清除定时器
+            clearInterval(this.timer);
+            this.timer = null;
+            //关闭弹出框
+            done();
+          } else {
+            //判断是否真的支付了
+            //开发人员：为了自己方便，这里判断先不要了
+            // if (this.code == 200) {
+              clearInterval(this.timer);
+              this.timer = null;
+              done();
+              this.$router.push("/paySuccess");
+            // }
+          }
+        }
+      }).catch((err) => console.log(err))
+      //你需要知道支付成功|失败
+      //支付成功，路由的跳转，如果支付失败，提示信息
+      //定时器没有，开启一个新的定时器
+      if(!this.timer) {
+        this.timer = setInterval(async ()=> {
+          let result = await this.$API.PayStates(orderId)
+          // console.log(result)
+          if(result.code == 200) {
+            //清除定时器
+            clearInterval(this.timer);
+            this.timer = null
+            //保存支付成功码
+            this.successCode = result.code
+            //关闭弹框
+            this.$msgbox.close()
+            //路由跳转
+            this.$router.push("/paySuccess");
+          }
+        },1000)
+      }
     },
   },
   mounted() {

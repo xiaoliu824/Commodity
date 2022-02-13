@@ -124,3 +124,15 @@ export function PayInfo(orderId) {
   return requests({url: `/payment/weixin/createNative/${orderId}`,method: 'get'})
 }
 
+//查询支付订单信息
+//url /api/payment/weixin/queryPayStatus/{orderId}
+export function PayStates(orderId) {
+  return requests({url: `/payment/weixin/queryPayStatus/${orderId}`, method: 'get'})
+}
+
+// 获取个人订单信息
+// url /api/order/auth/{page}/{limit}
+export function reqMyOrderList(page,limit) {
+  return requests({url: `/order/auth/${page}/${limit}`, method: 'get'})
+}
+

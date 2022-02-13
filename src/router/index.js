@@ -5,6 +5,14 @@ import VueRouter from 'vue-router'
 Vue.use(VueRouter)
 import routes from './routes'
 
+
+const originalPush = VueRouter.prototype.push
+//修改原型对象中的push方法
+VueRouter.prototype.push = function push(location) {
+   return originalPush.call(this, location).catch(err => err)
+}
+
+
 const router = new VueRouter({
   routes,
   // 滚动行为
@@ -50,7 +58,16 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     // 未登录
-    next()
+    //未登录：不能去交易相关、不能去支付相关【pay|paysuccess】、不能去个人中心
+    //未登录去上面这些路由-----登录
+    let toPath = to.path
+    if(toPath.indexOf('/trade') != -1 || toPath.indexOf('/pay') != -1 || toPath.indexOf('/center') != -1) {
+      // 如果未登录去的这些页面将不能去,将跳转到登录页,将要跳转的页面存储到地址栏中
+      next('/login?newPath='+toPath)
+    } else {
+      // 不是去那些页面,正常进行跳转
+      next()
+    }
   }
 })
 
